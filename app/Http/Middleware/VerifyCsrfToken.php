@@ -13,7 +13,7 @@ class VerifyCsrfToken extends BaseVerifier
      */
     protected $except = [
         'terreno/create',
-        'terreno/edit/*',
+        'terreno/*/edit',
         'terreno/delete/*'
     ];
 }

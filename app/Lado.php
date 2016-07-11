@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Lado extends Model
 {
     protected $table = 'lados';
+    protected $primaryKey = 'gid';
     protected $timestamps = false;
     
     public function terrenos(){

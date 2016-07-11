@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Terreno extends Model
 {
     protected $table = 'terrenos';
-    protected $timestamps = false;
+    protected $primaryKey = 'gid';
+    public $timestamps = false;
+    
+    protected $hidden = ['shape_leng','shape_area'];
     
     public function predios(){
         return $this->hasMany('Estratificacion\Predio');

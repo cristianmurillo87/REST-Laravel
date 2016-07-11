@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Predio extends Model
 {
     protected $table = 'predios';
+    protected $primaryKey = 'gid';
     protected $timestamps = false;
     
     public function terreno(){

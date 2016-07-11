@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Atipica extends Model
 {
     protected $table = 'atipicas';
+    protected $primaryKey = 'gid';
     protected $timestamps = false;
     
     public function terreno(){

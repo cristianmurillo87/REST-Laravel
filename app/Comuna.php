@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Comuna extends Model
 {
     protected $table = 'comunas';
+    protected $primaryKey = 'gid';
     protected $timestamps = false;
     
     public function barrios(){

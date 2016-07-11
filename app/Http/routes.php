@@ -10,37 +10,15 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+use Illuminate\Http\Response as Response;
+use Estratificacion\Terreno as Terreno;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix'=>'terreno'],function(){
-    
-    /*Route::get('/',function(){
-        return "Listado de terrenos";
-    });*/
-    
-    Route::get('/{id?}', function($id = null){
-        if($id!= null){
-            return "Propiedades del terreno $id.";
-        }
-        else{
-            return "Listado de terrenos.";
-        }
-    });
-    
-    Route::post('/create', function(){
-        return "Terreno creado correctamente.";
-    });
-    
-    Route::put('edit/{id}', function($id){
-        return "Terreno $id editado correctamente.";
-    });
-    
-    Route::delete('delete/{id}',function($id){
-        return "Terreno $id eliminado correctamente.";
-    });
-    
-    
+//Grupo de rutas para obtener informacion de los terrenos
+Route::group(['prefix'=>'terreno'],function(){  
+    Route::get('/{limit}/{offset}', 'TerrenoController@index');
+    Route::get('/{id}', 'TerrenoController@show');
 });

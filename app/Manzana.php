@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Manzana extends Model
 {
     protected $table = 'manzanas';
+    protected $primaryKey = 'gid';
     protected $timestamps = false;
     
     public function terrenos(){
