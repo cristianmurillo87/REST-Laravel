@@ -21,4 +21,17 @@ Route::get('/', function () {
 Route::group(['prefix'=>'terreno'],function(){  
     Route::get('/{limit}/{offset}', 'TerrenoController@index');
     Route::get('/{id}', 'TerrenoController@show');
+    Route::get('/{x}/{y}/identify','TerrenoController@identify');
+});
+
+//Grupo de rutas encargado de gestionar las peticiones 
+//relacionadas con identificacion de propiedades de objetos espaciales
+Route::group(['prefix'=>'identify'],function(){
+    Route::get('/{x}/{y}','IdentifyController@all');
+    Route::get('/{x}/{y}/terreno','IdentifyController@identifyTerreno');
+    Route::get('/{x}/{y}/lado','IdentifyController@identifyLado');
+    Route::get('/{x}/{y}/manzana','IdentifyController@identifyManzana');
+    Route::get('/{x}/{y}/barrio','IdentifyController@identifyBarrio');
+    Route::get('/{x}/{y}/comuna','IdentifyController@identifyComuna');
+    
 });
