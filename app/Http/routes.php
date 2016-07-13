@@ -27,8 +27,13 @@ Route::group(['prefix'=>'terreno'],function(){
 //Grupo de rutas para obtener informacion de los predios
 Route::group(['prefix'=>'predio'],function(){  
     Route::get('/{limit}/{offset}', 'PredioController@index');
-    Route::get('/{id}', 'TerrenoController@show');
-    Route::get('/{x}/{y}/identify','TerrenoController@identify');
+    Route::get('/{id}', 'PredioController@show');
+});
+
+//Grupo de rutas para obtener informacion de los predios
+Route::group(['prefix'=>'atipicidad'],function(){  
+    Route::get('/{limit}/{offset}', 'AtipicaController@index');
+    Route::get('/{id}', 'AtipicaController@show');
 });
 
 //Grupo de rutas encargado de gestionar las peticiones 
@@ -36,9 +41,6 @@ Route::group(['prefix'=>'predio'],function(){
 Route::group(['prefix'=>'identify'],function(){
     Route::get('/{x}/{y}','IdentifyController@all');
     Route::get('/{x}/{y}/terreno','IdentifyController@identifyTerreno');
-    Route::get('/{x}/{y}/lado','IdentifyController@identifyLado');
     Route::get('/{x}/{y}/manzana','IdentifyController@identifyManzana');
-    Route::get('/{x}/{y}/barrio','IdentifyController@identifyBarrio');
-    Route::get('/{x}/{y}/comuna','IdentifyController@identifyComuna');
-    
+
 });

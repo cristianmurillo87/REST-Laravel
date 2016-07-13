@@ -14,11 +14,11 @@ class PredioController extends Controller
     
     public function index($limit, $offset){
         $predio = DB::table('predios')->orderBy('gid')->limit($limit)->offset($offset)->get();
-        
+        $total = DB::table('predios')->count();
         if(!$predio){
             return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),404);
         }
-        return response()->json(array('success'=>'true', 'data'=>$predio),200);
+        return response()->json(array('success'=>'true', 'total' => $total ,'data'=>$predio),200);
     }
     
     public function find($id){
