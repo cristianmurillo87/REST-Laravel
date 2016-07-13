@@ -24,6 +24,13 @@ Route::group(['prefix'=>'terreno'],function(){
     Route::get('/{x}/{y}/identify','TerrenoController@identify');
 });
 
+//Grupo de rutas para obtener informacion de los predios
+Route::group(['prefix'=>'predio'],function(){  
+    Route::get('/{limit}/{offset}', 'PredioController@index');
+    Route::get('/{id}', 'TerrenoController@show');
+    Route::get('/{x}/{y}/identify','TerrenoController@identify');
+});
+
 //Grupo de rutas encargado de gestionar las peticiones 
 //relacionadas con identificacion de propiedades de objetos espaciales
 Route::group(['prefix'=>'identify'],function(){

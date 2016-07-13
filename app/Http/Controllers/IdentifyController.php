@@ -17,16 +17,16 @@ class IdentifyController extends Controller
         
         $terreno = $terrenoController->identify($x, $y);
         
-        $predios = array();
+        $data = array();
                 
         foreach ($terreno as $t) {
             $codigo = $t->cod_predio;
-            $predio = $predioController->find($codigo);
-            array_push($predios, $predio);
+            $predios = $predioController->find($codigo);
+            $t->predios = $predios;
         }
         
         
-        return response()->json(array('success'=>'true','data' => array('terreno' => $terreno, 'predios'=> $predios)),200);
+        return response()->json(array('success'=>'true','data' => $terreno),200);
         
     }
 }

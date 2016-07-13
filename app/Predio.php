@@ -8,7 +8,7 @@ class Predio extends Model
 {
     protected $table = 'predios';
     protected $primaryKey = 'gid';
-    protected $timestamps = false;
+    public $timestamps = false;
     
     public function terreno(){
         return $this->belongsTo('Estratificacion\Terreno','cod_predio','cod_predio');

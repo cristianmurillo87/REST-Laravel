@@ -7,9 +7,20 @@ use Illuminate\Http\Request;
 use DB;
 
 use Estratificacion\Http\Requests;
+use Estratificacion\Predio as Predio;
 
 class PredioController extends Controller
 {
+    
+    public function index($limit, $offset){
+        $predio = DB::table('predios')->orderBy('gid')->limit($limit)->offset($offset)->get();
+        
+        if(!$predio){
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),404);
+        }
+        return response()->json(array('success'=>'true', 'data'=>$predio),200);
+    }
+    
     public function find($id){
         $predio = DB::table('predios')
                   ->leftJoin('terrenos','predios.cod_predio','=','terrenos.cod_predio')
@@ -24,5 +35,16 @@ class PredioController extends Controller
         }
         
         return $predio;
+    }
+    
+    
+    public function show($id){
+        $predio = $this->find($id);
+        
+        if(count($predio)< 1){
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No se encontró el predio solicitado.')),404);
+        }
+        
+        return response()->json(array('success'=>'true', 'data' => $predio),200);
     }
 }

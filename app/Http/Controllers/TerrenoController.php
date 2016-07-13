@@ -12,6 +12,14 @@ use Estratificacion\Terreno;
 
 class TerrenoController extends Controller
 {
+    
+    /*
+    *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado mediante la interseccion geografica 
+    *con un un punto con coordenadas x y
+    *@param $x -> coordenada x del punto del que se desea obtener informacion
+    *@param $y -> coordenada y del punto del que se desea obtener informacion
+    *@return Response
+    */
     public function identify($x, $y){
         if(is_numeric($x) && is_numeric($y)){
             $terreno = DB::select(DB::raw("select terrenos.gid as gid, terrenos.cod_predio as cod_predio, 
@@ -28,6 +36,12 @@ class TerrenoController extends Controller
         return [];
     
     }
+    
+    /*
+    *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado.
+    *@param $id -> numero matriz del terreno
+    *@return array
+    */
     
     public function find($id){
          $terreno = DB::table('terrenos')
@@ -60,7 +74,7 @@ class TerrenoController extends Controller
          $total = DB::table('terrenos')->count();
 
         if(!$terreno){
-            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),500);
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),404);
         }
         
         return response()->json(array('success'=>'true','total'=> $total ,'data' => $terreno),200);
@@ -69,6 +83,7 @@ class TerrenoController extends Controller
     
     /*
     *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado.
+    *ejecutando inicialmente el metodo find
     *@param $id -> numero matriz del terreno
     *@return Response
     */
@@ -86,29 +101,3 @@ class TerrenoController extends Controller
 
 }
 
-
-        /*
-        $consulta = "select a.gid gid, a.cod_predio cod_predio, a.cod_manzan cod_manzan, 
-        b.nombre actividad, a.direccion direccion, a.lado_manz lado_manz 
-	    from  terrenos a left outer join tipo_actividad b on a.cod_act=b.cod_act 
-        order by a.cod_predio, a.gid limit ".$limite." offset ".$cantidad;
-        
-        $users = DB::table('users')
-            ->join('contacts', 'users.id', '=', 'contacts.user_id')
-            ->join('orders', 'users.id', '=', 'orders.user_id')
-            ->select('users.*', 'contacts.phone', 'orders.price')
-            ->get();
-        
-        $users = DB::table('users')
-            ->leftJoin('posts', 'users.id', '=', 'posts.user_id')
-            ->get();
-            
-        $users = DB::table('users')
-                     ->select(DB::raw('count(*) as user_count, status'))
-                     ->where('status', '<>', 1)
-                     ->groupBy('status')
-                     ->get();
-                     
-        $consulta = "select st_astext(the_geom) wkt from barrios where cod_barrio='".$buscar."'";
-        
-        */
