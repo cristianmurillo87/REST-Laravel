@@ -17,6 +17,7 @@ class IdentifyController extends Controller
 {
 
         private $atipicaController;
+        private $clienteController;
         private $ladoController;
         private $manzanaController;
         private $predioController;
@@ -26,6 +27,7 @@ class IdentifyController extends Controller
    
     public function __construct(){
             $this->atipicaController = new AtipicaController();
+            $this->clienteController = new ClienteController();
             $this->ladoController = new LadoController();  
             $this->manzanaController = new ManzanaController();
             $this->predioController = new PredioController();
@@ -40,6 +42,7 @@ class IdentifyController extends Controller
             $codigo = $t->cod_predio;
             $t->predios = $this->predioController->find($codigo);
             $t->atipicidades = $this->atipicaController->find($codigo);
+            $t->suscriptores = $this->clienteController->find($codigo);
         }
         
        return $terreno;
@@ -50,7 +53,7 @@ class IdentifyController extends Controller
        
        foreach ($manzana as $m) {
            $cod_manzana = $m->cod_manzan;
-           $m->lados = $this->ladoController->find($cod_manzana);
+           $m->lados = $this->ladoController->find($cod_manzana, true);
        }
        
        return $manzana;
@@ -68,6 +71,10 @@ class IdentifyController extends Controller
     }
     
     public function all($x, $y){
-        
+        $terreno = $this->getTerreno($x, $y);
+        $manzana = $this->getManzana($x, $y);
+        $data = array('terrenos'=>$terreno, 'manzana' =>$manzana );
+        return response()->json(array('success'=>'true','data' => $data),200);
+       
     }
 }

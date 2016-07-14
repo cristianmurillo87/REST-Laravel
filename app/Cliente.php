@@ -8,6 +8,6 @@ class Cliente extends Model
 {
     protected $table = 'emcali_clientes';
     protected $primaryKey = 'gid';
-    protected $timestamps = false;
+    public $timestamps = false;
     
 }

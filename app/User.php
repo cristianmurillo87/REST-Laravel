@@ -14,10 +14,10 @@ class User extends Authenticatable
      
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usuario';
-    protected $timestamps = false;
+    public $timestamps = false;
     
     protected $fillable = [
-        'usuario', 'nombre','apellido', 'contrasena', 'id_estado'
+        'usuario', 'nombre','apellido', 'password', 'id_estado'
     ];
 
     /**
@@ -26,7 +26,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'contrasena', 'id_estado'
+        'contrasena', 'password', 'id_estado'
     ];
     
 }

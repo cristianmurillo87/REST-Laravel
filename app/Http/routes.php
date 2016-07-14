@@ -10,8 +10,10 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+//use Illuminate\Hashing;
 use Illuminate\Http\Response as Response;
 use Estratificacion\Terreno as Terreno;
+use Estratificacion\User as User;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +23,6 @@ Route::get('/', function () {
 Route::group(['prefix'=>'terreno'],function(){  
     Route::get('/{limit}/{offset}', 'TerrenoController@index');
     Route::get('/{id}', 'TerrenoController@show');
-    Route::get('/{x}/{y}/identify','TerrenoController@identify');
 });
 
 //Grupo de rutas para obtener informacion de los predios
@@ -36,6 +37,19 @@ Route::group(['prefix'=>'atipicidad'],function(){
     Route::get('/{id}', 'AtipicaController@show');
 });
 
+Route::group(['prefix'=>'lado'],function(){
+        Route::get('/{limit}/{offset}', 'LadoController@index');
+        Route::get('/{id}', 'LadoController@show');
+});
+
+Route::group(['prefix'=>'manzana'],function(){  
+        Route::get('/{id}', 'ManzanaController@show');
+});
+
+Route::group(['prefix'=>'suscriptor'], function(){
+        Route::get('/{id}', 'ClienteController@show');
+});
+
 //Grupo de rutas encargado de gestionar las peticiones 
 //relacionadas con identificacion de propiedades de objetos espaciales
 Route::group(['prefix'=>'identify'],function(){
@@ -44,3 +58,14 @@ Route::group(['prefix'=>'identify'],function(){
     Route::get('/{x}/{y}/manzana','IdentifyController@identifyManzana');
 
 });
+
+
+/*Route::group(['prefix'=>'usuario'], function(){
+   Route::get('/{id}', function($id){
+       $user = User::find($id);
+       $user->password = Hash::make($user->usuario);
+       $user->save();
+       
+        return response()->json($user);
+   });
+});*/
