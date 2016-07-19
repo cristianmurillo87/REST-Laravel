@@ -24,8 +24,8 @@ class PredioController extends Controller
     public function find($id){
         $predio = DB::table('predios')
                   ->leftJoin('terrenos','predios.cod_predio','=','terrenos.cod_predio')
-                  ->select('predios.gid', 'predios.cod_predio' , 'predios.direccion' , 
-                           'predios.cod_act' , 'predios.cod_pred_n' ,  'predios.num_predia')
+                  ->select('predios.gid', 'predios.cod_predio' , 'predios.direccion', 
+                           'predios.cod_act' , 'predios.cod_pred_n' ,  'predios.num_predia', DB::raw('st_astext(terrenos.the_geom) as wkt'))
                   ->where('predios.cod_predio', $id)
                   ->orWhere('predios.cod_pred_n',$id)
                   ->orWhere('predios.num_predia',$id)               

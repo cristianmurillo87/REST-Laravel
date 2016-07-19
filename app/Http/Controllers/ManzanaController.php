@@ -30,7 +30,7 @@ class ManzanaController extends Controller
                     ->select('manzanas.gid', 'manzanas.cod_manzan' , 'barrios.nombre as barrio' , 
                              DB::raw('st_astext(manzanas.the_geom) as wkt'))
                     ->where('manzanas.cod_manzan', $id)
-                    ->orderBy('predios.gid')->get();
+                    ->orderBy('manzanas.gid')->get();
             if(!$manzana){
                 return [];
             }

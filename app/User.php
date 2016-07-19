@@ -13,7 +13,7 @@ class User extends Authenticatable
      */
      
     protected $table = 'usuarios';
-    protected $primaryKey = 'id_usuario';
+    protected $primaryKey = 'usuario';
     public $timestamps = false;
     
     protected $fillable = [

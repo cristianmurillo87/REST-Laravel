@@ -13,6 +13,9 @@ use Estratificacion\Terreno;
 class TerrenoController extends Controller
 {
     
+  /*  public function __construct(){
+        $this->middleware('jwt.auth');
+    }*/
     /*
     *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado mediante la interseccion geografica 
     *con un un punto con coordenadas x y
@@ -22,6 +25,7 @@ class TerrenoController extends Controller
     */
     public function identify($x, $y){
         if(is_numeric($x) && is_numeric($y)){
+            
             $terreno = DB::select(DB::raw("select terrenos.gid as gid, terrenos.cod_predio as cod_predio, 
                                 terrenos.cod_manzan as cod_manzan, tipo_actividad.nombre as actividad, 
                                 terrenos.direccion as direccion, terrenos.lado_manz as lado_manz, 
