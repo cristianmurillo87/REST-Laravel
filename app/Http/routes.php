@@ -24,7 +24,7 @@ Route::group(['prefix'=>'api'], function(){
     
     Route::resource('authenticate', 'AuthenticateController', ['only'=>['index']]);
     Route::post('authenticate', 'AuthenticateController@authenticate');
-    Route::get('authenticate/user', 'AuthenticateController@isAdmin');
+    Route::get('authenticate/user', 'AuthenticateController@getAuthenticatedUser');
     //Grupo de rutas para obtener informacion de los terrenos
     Route::group(['prefix'=>'terreno'],function(){  
         Route::get('/{limit}/{offset}', 'TerrenoController@index');

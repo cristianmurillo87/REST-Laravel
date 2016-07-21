@@ -21,19 +21,13 @@ class AuthenticateController extends Controller
     }
     
    
-    public function isAdmin(Request $request){
-        $userId = $request->input('usuario');
-        $admin = DB::table('usuarios')
+    private function getRoles($id){
+        $roles = DB::table('usuarios')
                 ->join('perfil_usuario','usuarios.id','=','perfil_usuario.id_usuario')
-                ->select('perfil_usuario.administra')
-                ->where('usuarios.usuario',$userId)->first();
-   /*
-   $consulta= "select a.oid id, a.usuario nom_usuario, a.nombre nombre, a.apellido apellido, 
-b.consulta consulta, b.administra administra, b.usuario usuario from usuarios a 
-inner join perfil_usuario b on a.id=b.id_usuario where a.usuario='".$usuario."' and a.contrasena=md5('".$contrasena."')";
-   
-   */     
-        return response()->json(['isAdmin'=>$admin->administra]);
+                ->select('perfil_usuario.administra as administrar', 'perfil_usuario.consulta as consultar','perfil_usuario.usuario as ver')
+                ->where('usuarios.id',$id)->first();
+     
+        return $roles;
     }
     
     public function authenticate(Request $request){
@@ -72,6 +66,8 @@ inner join perfil_usuario b on a.id=b.id_usuario where a.usuario='".$usuario."' 
             return response()->json(['success'=>'false', 'error'=>'Token ausente'],$e->getStatusCode());
         }
         
+        $userRoles= $this->getRoles($user->id);
+        $user->roles = $userRoles; 
         return response()->json(compact('user')); 
     }
 }
