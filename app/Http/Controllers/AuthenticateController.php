@@ -3,6 +3,7 @@
 namespace Estratificacion\Http\Controllers;
 use Estratificacion\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use DB;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Estratificacion\User as User;
@@ -22,7 +23,17 @@ class AuthenticateController extends Controller
    
     public function isAdmin(Request $request){
         $userId = $request->input('usuario');
-        return response()->json([$userId]);
+        $admin = DB::table('usuarios')
+                ->join('perfil_usuario','usuarios.id','=','perfil_usuario.id_usuario')
+                ->select('perfil_usuario.administra')
+                ->where('usuarios.usuario',$userId)->first();
+   /*
+   $consulta= "select a.oid id, a.usuario nom_usuario, a.nombre nombre, a.apellido apellido, 
+b.consulta consulta, b.administra administra, b.usuario usuario from usuarios a 
+inner join perfil_usuario b on a.id=b.id_usuario where a.usuario='".$usuario."' and a.contrasena=md5('".$contrasena."')";
+   
+   */     
+        return response()->json(['isAdmin'=>$admin->administra]);
     }
     
     public function authenticate(Request $request){

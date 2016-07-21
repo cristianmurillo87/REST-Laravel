@@ -22,7 +22,7 @@ use Estratificacion\User as User;
 Route::group(['prefix'=>'api'], function(){
     
     
-    Route::resource('authenticate', 'AuthenticateController', ['only'=>['index', 'isAdmin']]);
+    Route::resource('authenticate', 'AuthenticateController', ['only'=>['index']]);
     Route::post('authenticate', 'AuthenticateController@authenticate');
     Route::get('authenticate/user', 'AuthenticateController@isAdmin');
     //Grupo de rutas para obtener informacion de los terrenos
