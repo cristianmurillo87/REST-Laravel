@@ -70,4 +70,15 @@ class AuthenticateController extends Controller
         $user->roles = $userRoles; 
         return response()->json(compact('user')); 
     }
+    
+    public function logOut(){
+        $token = JWTAuth::getToken();
+        if($token){
+            JWTAuth::setToken($token)->invalidate();
+            return response()->json(['success'=>true, 'message'=>'Sesion terminada']);
+        }
+        else{
+            return response()->json(['success'=>true, 'message'=>'Su sesion ya ha terminado']);
+        }
+    }
 }

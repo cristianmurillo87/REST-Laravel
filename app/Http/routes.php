@@ -19,6 +19,7 @@ use Estratificacion\User as User;
     return view('welcome');
 });*/
 
+Route::get('logout', 'AuthenticateController@logout' );
 Route::group(['prefix'=>'api'], function(){
     
     
