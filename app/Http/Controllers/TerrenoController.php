@@ -114,7 +114,7 @@ class TerrenoController extends Controller
 
         $terreno = $this->find($id);
         
-        $terreno = json_encode($terreno, JSON_UNESCAPED_BACKSLASHES );
+        $terreno = json_encode($terreno, JSON_UNESCAPED_SLASHES );
         
 
         if( count($terreno) < 1 ){
