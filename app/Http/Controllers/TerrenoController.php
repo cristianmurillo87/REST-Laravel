@@ -23,6 +23,8 @@ class TerrenoController extends Controller
     *@param $y -> coordenada y del punto del que se desea obtener informacion
     *@return Response
     */
+    
+    
     public function identify($x, $y){
         if(is_numeric($x) && is_numeric($y)){
             
@@ -47,6 +49,7 @@ class TerrenoController extends Controller
     *@return array
     */
     
+    /*
     public function find($id){
          $terreno = DB::table('terrenos')
                     ->leftJoin('lados','terrenos.lado_manz','=', 'lados.lado_manz')
@@ -54,6 +57,22 @@ class TerrenoController extends Controller
                              'terrenos.direccion','terrenos.cod_act','lados.estrato', 
                               DB::raw('st_astext(terrenos.the_geom) as wkt'))
                     ->where('cod_predio','=',$id)->get();
+          if(!$terreno){
+              return [];
+          }
+          
+          return $terreno;
+    }
+    */
+    
+    public function find($id){
+         $terreno = DB::select(
+                        DB::raw("
+                                select 'FeatureCollection' as type, array_to_json(array_agg(f)) as features from(
+                                select 'Feature' as type , st_asgeojson(the_geom)::json as geometry, row_to_json((
+                                select j from (select t.gid, t.cod_predio, t.direccion,t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties 
+                                from terrenos t inner join lados l on t.lado_manz = l.lado_manz where t.cod_predio = '$id') as f"));
+          
           if(!$terreno){
               return [];
           }
@@ -95,11 +114,14 @@ class TerrenoController extends Controller
 
         $terreno = $this->find($id);
         
+        $terreno = json_encode($terreno, JSON_UNESCAPED_BACKSLASHES );
+        
+
         if( count($terreno) < 1 ){
             return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No se encontró el terreno solicitado.')),404);
         }
-        
-        return response()->json(array('success'=>'true', 'data' => $terreno),200);
+        return $terreno;
+       // return response()->json(array('success'=>'true', 'data' => $terreno),200,[],JSON_UNESCAPED_UNICODE);
         
     }                  
 

@@ -15,45 +15,44 @@ use Illuminate\Http\Response as Response;
 use Estratificacion\Terreno as Terreno;
 use Estratificacion\User as User;
 
-/*Route::get('/', function () {
-    return view('welcome');
-});*/
 
-Route::get('logout', 'AuthenticateController@logout' );
-Route::group(['prefix'=>'api'], function(){
-    
-    
-    Route::resource('authenticate', 'AuthenticateController', ['only'=>['index']]);
+
+Route::group(['prefix' => 'api'], function() {
     Route::post('authenticate', 'AuthenticateController@authenticate');
     Route::get('authenticate/user', 'AuthenticateController@getAuthenticatedUser');
+    Route::get('logout', 'AuthenticateController@logout' );
+});
+
+
+Route::group(['prefix'=>'api', 'middleware'=>'jwt.auth'], function(){
     //Grupo de rutas para obtener informacion de los terrenos
-    Route::group(['prefix'=>'terreno'],function(){  
+    Route::group(['prefix'=>'terrenos'],function(){  
         Route::get('/{limit}/{offset}', 'TerrenoController@index');
         Route::get('/{id}', 'TerrenoController@show');
     });
 
     //Grupo de rutas para obtener informacion de los predios
-    Route::group(['prefix'=>'predio'],function(){  
+    Route::group(['prefix'=>'predios'],function(){  
         Route::get('/{limit}/{offset}', 'PredioController@index');
         Route::get('/{id}', 'PredioController@show');
     });
 
     //Grupo de rutas para obtener informacion de los predios
-    Route::group(['prefix'=>'atipicidad'],function(){  
+    Route::group(['prefix'=>'atipicas'],function(){  
         Route::get('/{limit}/{offset}', 'AtipicaController@index');
         Route::get('/{id}', 'AtipicaController@show');
     });
 
-    Route::group(['prefix'=>'lado'],function(){
+    Route::group(['prefix'=>'lados'],function(){
         Route::get('/{limit}/{offset}', 'LadoController@index');
         Route::get('/{id}', 'LadoController@show');
     });
 
-    Route::group(['prefix'=>'manzana'],function(){  
+    Route::group(['prefix'=>'manzanas'],function(){  
             Route::get('/{id}', 'ManzanaController@show');
     });
 
-    Route::group(['prefix'=>'suscriptor'], function(){
+    Route::group(['prefix'=>'suscriptores'], function(){
         Route::get('/{id}', 'ClienteController@show');
     });
 
@@ -61,19 +60,10 @@ Route::group(['prefix'=>'api'], function(){
     //relacionadas con identificacion de propiedades de objetos espaciales
     Route::group(['prefix'=>'identify'],function(){
         Route::get('/{x}/{y}','IdentifyController@all');
-        Route::get('/{x}/{y}/terreno','IdentifyController@identifyTerreno');
-        Route::get('/{x}/{y}/manzana','IdentifyController@identifyManzana');
+        Route::get('/{x}/{y}/terrenos','IdentifyController@identifyTerreno');
+        Route::get('/{x}/{y}/manzanas','IdentifyController@identifyManzana');
 
     });
 
 });
 
-/*Route::group(['prefix'=>'usuario'], function(){
-   Route::get('/{id}', function($id){
-       $user = User::find($id);
-       $user->password = Hash::make($user->usuario);
-       $user->save();
-       
-        return response()->json($user);
-   });
-});*/

@@ -12,14 +12,10 @@ use Estratificacion\Http\Requests;
 class AuthenticateController extends Controller
 {
     public function __construct(){
-        $this->middleware('jwt.auth', ['except'=>['authenticate']]);
+        $this->middleware('jwt.auth', ['except'=>['authenticate', 'logout']]);
     }
     
-    public function index(){
-        $user = User::all();
-        return $user;
-    }
-    
+
    
     private function getRoles($id){
         $roles = DB::table('usuarios')
@@ -71,7 +67,7 @@ class AuthenticateController extends Controller
         return response()->json(compact('user')); 
     }
     
-    public function logOut(){
+    public function logout(){
         $token = JWTAuth::getToken();
         if($token){
             JWTAuth::setToken($token)->invalidate();
