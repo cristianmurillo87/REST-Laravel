@@ -25,12 +25,11 @@ class ManzanaController extends Controller
     }
     
     public function find($id){
-            $manzana = DB::table('manzanas')
-                    ->leftJoin('barrios','manzanas.cod_barrio','=','barrios.cod_barrio')
-                    ->select('manzanas.gid', 'manzanas.cod_manzan' , 'barrios.nombre as barrio' , 
-                             DB::raw('st_astext(manzanas.the_geom) as wkt'))
-                    ->where('manzanas.cod_manzan', $id)
-                    ->orderBy('manzanas.gid')->get();
+            $manzana = DB::select("select st_asgeojson(m.the_geom)::json as geometry, 
+            row_to_json((select j from(select m.gid, m.cod_manzan, b.cod_barrio, b.nombre) as j)) as properties 
+            from manzanas m inner join barrios b on m.cod_barrio = b.cod_barrio where m.cod_manzan = '$id'
+            ");
+
             if(!$manzana){
                 return [];
             }
@@ -45,7 +44,24 @@ class ManzanaController extends Controller
            if(count($manzana)< 1){
                return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No se encontró la manzana solicitada.')),404);
            }
+
+            $features= array();
+            foreach ($manzana as $m) {
+                array_push($features,
+                    array(
+                        "type"=>"Feature",
+                        "geometry" => json_decode($m->geometry,true),
+                        "properties" =>json_decode($m->properties,true)
+                    )
+                );
+            }
             
-           return response()->json(array('success'=>'true', 'data' => $manzana),200);
+            $geojson = array(
+                "type" =>"FeatureCollection",
+                "features" => $features
+            );           
+           
+            
+           return response()->json(array('success'=>'true', 'data' => $geojson),200);
      } 
 }

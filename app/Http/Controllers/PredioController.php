@@ -16,7 +16,7 @@ class PredioController extends Controller
         $predio = DB::table('predios')->orderBy('gid')->limit($limit)->offset($offset)->get();
         $total = DB::table('predios')->count();
         if(!$predio){
-            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),404);
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error en la consulta.')),404);
         }
         return response()->json(array('success'=>'true', 'total' => $total ,'data'=>$predio),200);
     }
@@ -24,8 +24,10 @@ class PredioController extends Controller
     public function find($id){
         $predio = DB::table('predios')
                   ->leftJoin('terrenos','predios.cod_predio','=','terrenos.cod_predio')
+                  ->leftJoin('lados','terrenos.lado_manz','=','lados.lado_manz')
                   ->select('predios.gid', 'predios.cod_predio' , 'predios.direccion', 
-                           'predios.cod_act' , 'predios.cod_pred_n' ,  'predios.num_predia', DB::raw('st_astext(terrenos.the_geom) as wkt'))
+                           'predios.cod_act' , 'predios.cod_pred_n' ,  'predios.num_predia',
+                           'terrenos.lado_manz','lados.estrato' )
                   ->where('predios.cod_predio', $id)
                   ->orWhere('predios.cod_pred_n',$id)
                   ->orWhere('predios.num_predia',$id)               

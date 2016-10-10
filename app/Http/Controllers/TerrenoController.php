@@ -34,7 +34,7 @@ class TerrenoController extends Controller
                                 st_astext(terrenos.the_geom) as geometry, lados.estrato from terrenos 
                                 left join tipo_actividad on terrenos.cod_act = tipo_actividad.cod_act 
                                 left join lados on terrenos.lado_manz = lados.lado_manz
-                                where st_intersects(terrenos.the_geom, st_geomfromtext('POINT($x $y)',97393))"));
+                                where st_intersects(terrenos.the_geom, st_geomfromtext('POINT($x $y)',97664))"));
            
             return $terreno;            
         }
@@ -46,32 +46,17 @@ class TerrenoController extends Controller
     /*
     *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado.
     *@param $id -> numero matriz del terreno
-    *@return array
-    */
-    
-    /*
-    public function find($id){
-         $terreno = DB::table('terrenos')
-                    ->leftJoin('lados','terrenos.lado_manz','=', 'lados.lado_manz')
-                    ->select('terrenos.gid','terrenos.cod_predio','terrenos.cod_manzan','terrenos.lado_manz',
-                             'terrenos.direccion','terrenos.cod_act','lados.estrato', 
-                              DB::raw('st_astext(terrenos.the_geom) as wkt'))
-                    ->where('cod_predio','=',$id)->get();
-          if(!$terreno){
-              return [];
-          }
-          
-          return $terreno;
-    }
+    *@return array de objetos json
     */
     
     public function find($id){
-         $terreno = DB::select(
-                        DB::raw("
-                                select 'FeatureCollection' as type, array_to_json(array_agg(f)) as features from(
-                                select 'Feature' as type , st_asgeojson(the_geom)::json as geometry, row_to_json((
-                                select j from (select t.gid, t.cod_predio, t.direccion,t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties 
-                                from terrenos t inner join lados l on t.lado_manz = l.lado_manz where t.cod_predio = '$id') as f"));
+         
+          $terreno = DB::select(
+                        DB::raw("select st_asgeojson(t.the_geom) as geometry, 
+                                row_to_json((select j from (select t.gid, t.cod_predio, p.num_predia, p.cod_pred_n, p.direccion,t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties 
+                                from terrenos t inner join lados l on t.lado_manz = l.lado_manz 
+                                inner join predios p on p.cod_predio = t.cod_predio where p.cod_predio ='$id' or
+                                p.cod_pred_n = '$id' or p.num_predia = '$id' limit 1"));
           
           if(!$terreno){
               return [];
@@ -100,6 +85,7 @@ class TerrenoController extends Controller
             return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),404);
         }
         
+        
         return response()->json(array('success'=>'true','total'=> $total ,'data' => $terreno),200);
         
     }
@@ -113,15 +99,28 @@ class TerrenoController extends Controller
     public function show($id){
 
         $terreno = $this->find($id);
-        
-        $terreno = json_encode($terreno, JSON_UNESCAPED_SLASHES );
-        
-
+                
         if( count($terreno) < 1 ){
-            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No se encontró el terreno solicitado.')),404);
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No fue posible ubicar el terreno solicitado.')),404);
         }
-        return $terreno;
-       // return response()->json(array('success'=>'true', 'data' => $terreno),200,[],JSON_UNESCAPED_UNICODE);
+        
+        $features= array();
+        foreach ($terreno as $t) {
+            array_push($features,
+                array(
+                    "type"=>"Feature",
+                    "geometry" => json_decode($t->geometry,true),
+                    "properties" =>json_decode($t->properties,true)
+                )
+            );
+        }
+        
+        $geojson = array(
+            "type" =>"FeatureCollection",
+            "features" => $features
+        );
+
+        return response()->json(array('success'=>'true', 'data'=>$geojson), 200);
         
     }                  
 
