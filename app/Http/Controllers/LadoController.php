@@ -8,6 +8,7 @@ use Illuminate\Support\Str as Str;
 use DB;
 
 use Estratificacion\Http\Requests;
+use Estratificacion\Http\Controllers\JsonController as JsonController;
 
 class LadoController extends Controller
 {
@@ -50,21 +51,7 @@ class LadoController extends Controller
             return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No se encontró el lado de manzana solicitado.')),404);
         }
         
-        $features = array();
-        foreach ($lado as $l) {
-            array_push($features,
-                array(
-                    "type"=>"Feature",
-                    "geometry"=>json_decode($l->geometry,true),
-                    "properties"=>json_decode($l->properties,true)
-                )
-            );
-        }
-        
-        $geojson = array(
-            "type" => "FeatureCollection",
-            "features" => $features
-        );
+        $geojson = JSONController::stringToGeoJson($lado);
         
         return response()->json(array('success'=>'true', 'data'=>$geojson),200);
     }

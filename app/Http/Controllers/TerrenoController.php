@@ -9,6 +9,7 @@ use DB;
 
 use Estratificacion\Http\Requests;
 use Estratificacion\Terreno;
+use Estratificacion\Http\Controllers\JsonController as JsonController;
 
 class TerrenoController extends Controller
 {
@@ -45,19 +46,24 @@ class TerrenoController extends Controller
     
     /*
     *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado.
-    *@param $id -> numero matriz del terreno
+    *@param $id -> numero matriz del , numero predial nacional o codigo predial
     *@return array de objetos json
     */
     
     public function find($id){
-         
-          $terreno = DB::select(
-                        DB::raw("select st_asgeojson(t.the_geom) as geometry, 
-                                row_to_json((select j from (select t.gid, t.cod_predio, p.num_predia, p.cod_pred_n, p.direccion,t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties 
-                                from terrenos t inner join lados l on t.lado_manz = l.lado_manz 
-                                inner join predios p on p.cod_predio = t.cod_predio where p.cod_predio ='$id' or
-                                p.cod_pred_n = '$id' or p.num_predia = '$id' limit 1"));
-          
+
+          $terreno = DB::table('terrenos as t')
+                        ->leftJoin('lados as l','t.lado_manz','=','l.lado_manz')
+                        ->leftJoin('predios as p','t.cod_predio','=','p.cod_predio')
+                        ->select(
+                            DB::raw("st_asgeojson(t.the_geom) as geometry"), 
+                            DB::raw("row_to_json((select j from (select t.gid, t.cod_predio,p.num_predia, p.cod_pred_n, 
+                                p.direccion, t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties")
+                          )
+                        ->where('p.cod_predio','=',$id)
+                        ->orWhere('p.cod_pred_n','=',$id)
+                        ->orWhere('p.num_predia','=',$id)->limit(1)->get();
+
           if(!$terreno){
               return [];
           }
@@ -104,22 +110,8 @@ class TerrenoController extends Controller
             return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No fue posible ubicar el terreno solicitado.')),404);
         }
         
-        $features= array();
-        foreach ($terreno as $t) {
-            array_push($features,
-                array(
-                    "type"=>"Feature",
-                    "geometry" => json_decode($t->geometry,true),
-                    "properties" =>json_decode($t->properties,true)
-                )
-            );
-        }
+        $geojson = JSONController::stringToGeoJson($terreno);
         
-        $geojson = array(
-            "type" =>"FeatureCollection",
-            "features" => $features
-        );
-
         return response()->json(array('success'=>'true', 'data'=>$geojson), 200);
         
     }                  

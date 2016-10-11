@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use DB;
 
 use Estratificacion\Http\Requests;
+use Estratificacion\Http\Controllers\JsonController as JsonController;
+
 
 class ManzanaController extends Controller
 {
@@ -25,10 +27,13 @@ class ManzanaController extends Controller
     }
     
     public function find($id){
-            $manzana = DB::select("select st_asgeojson(m.the_geom)::json as geometry, 
-            row_to_json((select j from(select m.gid, m.cod_manzan, b.cod_barrio, b.nombre) as j)) as properties 
-            from manzanas m inner join barrios b on m.cod_barrio = b.cod_barrio where m.cod_manzan = '$id'
-            ");
+            $manzana = DB::table('manzanas as m')
+            ->join('barrios as b','m.cod_barrio','=','b.cod_barrio')
+            ->select(
+                DB::raw("st_asgeojson(m.the_geom)::json as geometry"),
+                DB::raw("row_to_json((select j from(select m.gid, m.cod_manzan, b.cod_barrio, b.nombre) as j)) as properties")
+            )
+            ->where("m.cod_manzan","=",$id)->get();
 
             if(!$manzana){
                 return [];
@@ -45,22 +50,8 @@ class ManzanaController extends Controller
                return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'No se encontró la manzana solicitada.')),404);
            }
 
-            $features= array();
-            foreach ($manzana as $m) {
-                array_push($features,
-                    array(
-                        "type"=>"Feature",
-                        "geometry" => json_decode($m->geometry,true),
-                        "properties" =>json_decode($m->properties,true)
-                    )
-                );
-            }
             
-            $geojson = array(
-                "type" =>"FeatureCollection",
-                "features" => $features
-            );           
-           
+           $geojson = JSONController::stringToGeoJson($manzana);
             
            return response()->json(array('success'=>'true', 'data' => $geojson),200);
      } 

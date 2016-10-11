@@ -56,6 +56,14 @@ Route::group(['prefix'=>'api', 'middleware'=>'jwt.auth'], function(){
         Route::get('/{id}', 'ClienteController@show');
     });
 
+    Route::group(['prefix'=>'barrios'], function(){
+        Route::get('/{id}', 'BarrioController@show');
+    });
+    
+    Route::group(['prefix'=>'comunas'], function(){
+        Route::get('/{id}', 'ComunaController@show');
+    });
+    
     //Grupo de rutas encargado de gestionar las peticiones 
     //relacionadas con identificacion de propiedades de objetos espaciales
     Route::group(['prefix'=>'identify'],function(){
