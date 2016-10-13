@@ -40,4 +40,21 @@ class ClienteController extends Controller
         return response()->json(array('success'=>'true', 'data'=>$geojson),200);
 
     }
+    
+    public function extJSFind($terreno){
+       
+        $cliente = DB::select("select c.cod_cliente as text, 'true' as leaf from emcali_clientes c 
+                               where st_intersects((select t.the_geom from terrenos t where t.cod_predio = ?), c.the_geom) 
+                               or c.cod_predio=?",array($terreno,$terreno));
+        
+        if(!$cliente){
+            return [];
+        }
+        
+        $clientes = array("text"=>"Clientes Emcali", 
+                          "leaf"=>"false",
+                          "children"=>$cliente);
+        
+        return $clientes;
+    }
 }

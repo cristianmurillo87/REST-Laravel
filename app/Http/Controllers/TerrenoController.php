@@ -60,7 +60,7 @@ class TerrenoController extends Controller
                             DB::raw("row_to_json((select j from (select t.gid, t.cod_predio,p.num_predia, p.cod_pred_n, 
                                 p.direccion, t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties")
                           )
-                        ->where('p.cod_predio','=',$id)
+                        ->where('t.cod_predio','=',$id)
                         ->orWhere('p.cod_pred_n','=',$id)
                         ->orWhere('p.num_predia','=',$id)->limit(1)->get();
 

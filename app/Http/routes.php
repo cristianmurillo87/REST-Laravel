@@ -67,10 +67,7 @@ Route::group(['prefix'=>'api', 'middleware'=>'jwt.auth'], function(){
     //Grupo de rutas encargado de gestionar las peticiones 
     //relacionadas con identificacion de propiedades de objetos espaciales
     Route::group(['prefix'=>'identify'],function(){
-        Route::get('/{x}/{y}','IdentifyController@all');
-        Route::get('/{x}/{y}/terrenos','IdentifyController@identifyTerreno');
-        Route::get('/{x}/{y}/manzanas','IdentifyController@identifyManzana');
-
+        Route::get('/{terreno}/{manzana}','ExtIdentifyController@identify');
     });
 
 });

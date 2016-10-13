@@ -56,4 +56,23 @@ class LadoController extends Controller
         return response()->json(array('success'=>'true', 'data'=>$geojson),200);
     }
     
+        public function extJSFind($id){
+       
+        $lado = DB::table('lados as l')->select(DB::raw("l.lado_manz as text,'true' as leaf"))->where('l.cod_manzana','=',$id)->get();
+        
+        if(!$lado){
+            return [];
+        }
+        
+        $lados = array("text"=>"Manzana", 
+                       "leaf"=>"false",
+                       "children"=>array(
+                            "text"=>$id,
+                            "leaf"=>"false",
+                            "children"=>$lado
+                         ));
+        
+        return $lados;
+    }
+    
 }

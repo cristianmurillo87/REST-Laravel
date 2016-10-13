@@ -49,4 +49,23 @@ class PredioController extends Controller
         
         return response()->json(array('success'=>'true', 'data' => $predio),200);
     }
+    
+    public function extJSFind($id){
+       
+        $predio = DB::table('predios as p')->select(DB::raw("p.cod_pred_n as text,'true' as leaf"))->where('p.cod_predio','=',$id)->get();
+        
+        if(!$predio){
+            return [];
+        }
+        
+        $predios = array("text"=>"Terreno", 
+                         "leaf"=>"false",
+                         "children"=>array(
+                             "text"=>$id,
+                             "leaf"=>"false",
+                             "children"=>$predio
+                         ));
+        
+        return $predios;
+    }
 }
