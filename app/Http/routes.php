@@ -26,24 +26,28 @@ Route::group(['prefix' => 'api'], function() {
 
 Route::group(['prefix'=>'api', 'middleware'=>'jwt.auth'], function(){
     //Grupo de rutas para obtener informacion de los terrenos
-    Route::group(['prefix'=>'terrenos'],function(){  
+    Route::group(['prefix'=>'terrenos'],function(){ 
+        Route::get('/', 'TerrenoController@extIndex'); 
         Route::get('/{limit}/{offset}', 'TerrenoController@index');
         Route::get('/{id}', 'TerrenoController@show');
     });
 
     //Grupo de rutas para obtener informacion de los predios
-    Route::group(['prefix'=>'predios'],function(){  
+    Route::group(['prefix'=>'predios'],function(){
+        Route::get('/', 'PredioController@extIndex');  
         Route::get('/{limit}/{offset}', 'PredioController@index');
         Route::get('/{id}', 'PredioController@show');
     });
 
     //Grupo de rutas para obtener informacion de los predios
-    Route::group(['prefix'=>'atipicas'],function(){  
+    Route::group(['prefix'=>'atipicas'],function(){
+        Route::get('/', 'AtipicaController@extIndex');  
         Route::get('/{limit}/{offset}', 'AtipicaController@index');
         Route::get('/{id}', 'AtipicaController@show');
     });
 
     Route::group(['prefix'=>'lados'],function(){
+        Route::get('/', 'LadoController@extIndex');
         Route::get('/{limit}/{offset}', 'LadoController@index');
         Route::get('/{id}', 'LadoController@show');
     });

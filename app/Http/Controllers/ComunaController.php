@@ -17,7 +17,8 @@ class ComunaController extends Controller
                        DB::raw("st_asgeojson(c.the_geom)::json as geometry"),
                        DB::raw("row_to_json((select j from (select c.gid, c.cod_comuna,c.nombre) as j)) as properties")
                    )
-                  ->where('c.cod_comuna', '=', $id)->get();
+                  ->where('c.cod_comuna', '=', strtoupper($id))
+                  ->orWhere('c.nombre', '=', strtoupper($id))->get();
                    
         if(!$comuna){
             return [];

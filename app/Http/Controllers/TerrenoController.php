@@ -57,12 +57,12 @@ class TerrenoController extends Controller
                         ->leftJoin('predios as p','t.cod_predio','=','p.cod_predio')
                         ->select(
                             DB::raw("st_asgeojson(t.the_geom) as geometry"), 
-                            DB::raw("row_to_json((select j from (select t.gid, t.cod_predio,p.num_predia, p.cod_pred_n, 
+                            DB::raw("row_to_json((select j from (select p.gid, t.cod_predio,p.num_predia, p.cod_pred_n, 
                                 p.direccion, t.cod_act,t.cod_manzan,t.lado_manz,l.estrato) as j)) as properties")
                           )
                         ->where('t.cod_predio','=',$id)
                         ->orWhere('p.cod_pred_n','=',$id)
-                        ->orWhere('p.num_predia','=',$id)->limit(1)->get();
+                        ->orWhere('p.num_predia','=',strtoupper($id))->limit(1)->get();
 
           if(!$terreno){
               return [];
@@ -70,7 +70,8 @@ class TerrenoController extends Controller
           
           return $terreno;
     }
-    
+
+ 
     
     /*
     *Despliega la lista de terrenos en forma de informacion para paginacion.
@@ -95,7 +96,28 @@ class TerrenoController extends Controller
         return response()->json(array('success'=>'true','total'=> $total ,'data' => $terreno),200);
         
     }
-    
+
+    public function extIndex( Request $request){
+        $limit = $request->input('limit');
+        $offset = $request->input('offset');
+
+        $terreno = DB::table('terrenos')
+                    ->leftJoin('tipo_actividad','terrenos.cod_act','=','tipo_actividad.cod_act')
+                    ->select('terrenos.gid as gid','terrenos.cod_predio as cod_predio','terrenos.cod_manzan as cod_manzan',
+                             'tipo_actividad.nombre as actividad', 'terrenos.direccion as direccion', 'terrenos.lado_manz as lado_manz')
+                    ->orderBy('gid')->limit($limit)->offset($offset)->get();
+                    
+         $total = DB::table('terrenos')->count();
+
+        if(!$terreno){
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los terrenos.')),404);
+        }
+        
+        
+        return response()->json(array('success'=>'true','total'=> $total ,'data' => $terreno),200);
+        
+    }
+
     /*
     *Devuelve informacion geografica y alfanumerica relacionada con el terreno solicitado.
     *ejecutando inicialmente el metodo find

@@ -13,7 +13,11 @@ use Estratificacion\Http\Controllers\JsonController as JsonController;
 class LadoController extends Controller
 {
     public function index($limit, $offset){
-        $lado = DB::table('lados')->orderBy('lado_manz')->limit($limit)->offset($offset)->get();
+
+        $lim = $limit;
+        $off = $offset;
+
+        $lado = DB::table('lados')->orderBy('lado_manz')->limit($lim)->offset($off)->get();
         $total = DB::table('lados')->count();
 
         if(!$lado){
@@ -22,20 +26,34 @@ class LadoController extends Controller
         
         return response()->json(array('success'=>'true','total'=> $total ,'data' => $lado),200);
     }
-    
+
+    public function extIndex(Request $request){
+
+        $lim = $request->input('limit');;
+        $off = $request->input('offset');
+
+        $lado = DB::table('lados')->orderBy('lado_manz')->limit($lim)->offset($off)->get();
+        $total = DB::table('lados')->count();
+
+        if(!$lado){
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al consultar los lados.')),404);
+        }
+        
+        return response()->json(array('success'=>'true','total'=> $total ,'data' => $lado),200);
+    }
+
     public function find($id, $byManzana = false){
         $lado = array();
         if(!$byManzana){
-            $lado = DB::select(DB::raw(
-                "select st_asgeojson(st_union(t.the_geom))::json as geometry, 
-                row_to_json((select j from(select l.*) as j)) as properties from 
-                lados l inner join terrenos t on t.lado_manz = l.lado_manz where l.lado_manz = '$id' 
-                group by l.gid order by l.lado_manz"
-            ));
+            $lado = DB::table('lados as l')
+                    ->join('terrenos as t','l.lado_manz','=','t.lado_manz')
+                    ->select(DB::raw("st_asgeojson(st_union(t.the_geom))::json as geometry, 
+                            row_to_json((select j from(select l.*) as j)) as properties"))
+                    ->where('l.lado_manz', strtoupper($id))->groupBy('l.gid')->get();
         }
         else{
             $lado = DB::table('lados')
-                ->where('cod_manzana',$id)->orderBy('lado_manz')->get();
+                ->where('cod_manzana',strtoupper($id))->orderBy('lado_manz')->get();
         }
                 
         if(!$lado){

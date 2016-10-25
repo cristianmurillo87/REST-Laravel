@@ -20,7 +20,19 @@ class PredioController extends Controller
         }
         return response()->json(array('success'=>'true', 'total' => $total ,'data'=>$predio),200);
     }
-    
+
+    public function extIndex(Request $request){
+        $limit = $request->input('limit');
+        $offset = $request->input('offset');
+
+        $predio = DB::table('predios')->orderBy('gid')->limit($limit)->offset($offset)->get();
+        $total = DB::table('predios')->count();
+        if(!$predio){
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error en la consulta.')),404);
+        }
+        return response()->json(array('success'=>'true', 'total' => $total ,'data'=>$predio),200);
+    }
+
     public function find($id){
         $predio = DB::table('predios')
                   ->leftJoin('terrenos','predios.cod_predio','=','terrenos.cod_predio')
@@ -30,7 +42,7 @@ class PredioController extends Controller
                            'terrenos.lado_manz','lados.estrato' )
                   ->where('predios.cod_predio', $id)
                   ->orWhere('predios.cod_pred_n',$id)
-                  ->orWhere('predios.num_predia',$id)               
+                  ->orWhere('predios.num_predia',strtoupper($id))               
                   ->orderBy('predios.gid')->get();
         if(!$predio){
             return [];

@@ -19,10 +19,22 @@ class AtipicaController extends Controller
         }
         return response()->json(array('success'=>'true', 'total' => $total ,'data'=>$atipica),200);        
     }
+
+    public function extIndex(Request $request){
+        $limit = $request->input('limit');
+        $offset = $request->input('offset');
+
+        $atipica = DB::table('atipicas')->orderBy('gid')->limit($limit)->offset($offset)->get();
+        $total = DB::table('atipicas')->count();
+        if(!$atipica){
+            return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Error al realizar consulta.')),404);
+        }
+        return response()->json(array('success'=>'true', 'total' => $total ,'data'=>$atipica),200);        
+    }    
     
     public function find($id){
         $atipica = DB::table('atipicas')
-                   ->where('cod_predio',$id)->get();
+                   ->where('cod_predio',strtoupper($id))->get();
         if(!$atipica){
             return [];
         }

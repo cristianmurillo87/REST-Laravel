@@ -18,7 +18,8 @@ class BarrioController extends Controller
                        DB::raw("st_asgeojson(b.the_geom)::json as geometry"),
                        DB::raw("row_to_json((select j from (select b.gid, b.cod_comuna, b.cod_barrio, b.nombre) as j)) as properties")
                    )
-                  ->where('b.cod_barrio', '=', $id)->get();
+                  ->where('b.cod_barrio', '=', strtoupper($id))
+                  ->orWhere('b.nombre', '=', strtoupper($id))->get();
                    
         if(!$barrio){
             return [];
