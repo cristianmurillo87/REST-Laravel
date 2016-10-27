@@ -21,11 +21,24 @@ class BarrioController extends Controller
                   ->where('b.cod_barrio', '=', strtoupper($id))
                   ->orWhere('b.nombre', '=', strtoupper($id))->get();
                    
-        if(!$barrio){
+        if(count($barrio)==0){
             return [];
         }
         
         return $barrio;
+    }
+
+    public function _list(Request $request){
+      $req = '%'. $request->input('id').'%';
+      $barrio = DB::table('barrios as b')
+                ->select('b.cod_barrio', 'b.nombre')
+                ->where('b.cod_barrio', 'ilike', $req)
+                ->orWhere('b.nombre', 'ilike', $req)->orderBy('b.cod_barrio')->limit(5)->get();
+      if(!$barrio){
+        return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Barrio no encontrado.')),404);
+      }
+
+      return response()->json(array('success'=>'true', 'data'=>$barrio),200);
     }
     
     public function show($id){

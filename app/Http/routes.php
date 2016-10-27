@@ -61,6 +61,7 @@ Route::group(['prefix'=>'api', 'middleware'=>'jwt.auth'], function(){
     });
 
     Route::group(['prefix'=>'barrios'], function(){
+        Route::get('/', 'BarrioController@_list');
         Route::get('/{id}', 'BarrioController@show');
     });
     
