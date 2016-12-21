@@ -66,6 +66,7 @@ Route::group(['prefix'=>'api', 'middleware'=>'jwt.auth'], function(){
     });
     
     Route::group(['prefix'=>'comunas'], function(){
+        Route::get('/', 'ComunaController@_list');
         Route::get('/{id}', 'ComunaController@show');
     });
     

@@ -38,5 +38,18 @@ class ComunaController extends Controller
         
         return response()->json(array('success'=>'true', 'data'=>$geojson),200);
 
+    }
+
+    public function _list(Request $request){
+      $req = '%'. $request->input('id').'%';
+      $comuna = DB::table('comunas as c')
+                ->select('c.cod_comuna', 'c.nombre')
+                ->where('c.cod_comuna', 'ilike', $req)
+                ->orWhere('c.nombre', 'ilike', $req)->orderBy('c.cod_comuna')->get();
+      if(!$comuna){
+        return response()->json(array('success'=>'false', 'errors'=>array('reason'=>'Comuna no encontrada.')),404);
+      }
+
+      return response()->json(array('success'=>'true', 'data'=>$comuna),200);
     }  
 }
